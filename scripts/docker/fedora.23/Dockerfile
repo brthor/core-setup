@@ -27,17 +27,14 @@ RUN dnf install -y libicu \
         lttng-ust && \ 
     dnf clean all 
  
-# Setup User to match Host User, and give superuser permissions 
-ARG USER_ID=0 
-RUN useradd -m code_executor -u ${USER_ID} -g wheel
-RUN echo 'code_executor ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers 
- 
-# With the User Change, we need to change permissions on these directories 
-RUN chmod -R a+rwx /usr/local 
+# Remove sudo password
+RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+RUN echo '%root ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+RUN echo '%wheel ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+
+# Change permissions on these directories/files so any user can use them
+RUN chmod -R a+rwx /usr/local
 RUN chmod -R a+rwx /home
- 
-# Set user to the one we just created 
-USER ${USER_ID} 
  
 # Set working directory 
 WORKDIR /opt/code

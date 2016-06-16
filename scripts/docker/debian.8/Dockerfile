@@ -46,18 +46,14 @@ RUN apt-get update && \
 RUN update-alternatives --install /usr/bin/c++ c++ /usr/bin/clang++-3.5 100
 RUN update-alternatives --set c++ /usr/bin/clang++-3.5
 
-# Setup User to match Host User, and give superuser permissions
-ARG USER_ID=0
-RUN useradd -m code_executor -u ${USER_ID} -g sudo
-RUN echo 'code_executor ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+# Remove sudo password
+RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+RUN echo '%root ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
-# With the User Change, we need to change permissions on these directories
+# Change permissions on these directories/files so any user can use them
 RUN chmod -R a+rwx /usr/local
 RUN chmod -R a+rwx /home
-RUN chmod -R 755 /usr/lib/sudo
-
-# Set user to the one we just created
-USER ${USER_ID}
+RUN chmod -R 755 /usr/bin/sudo
 
 # Set working directory
 WORKDIR /opt/code
